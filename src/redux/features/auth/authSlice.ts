@@ -9,7 +9,7 @@ type TAuthState = {
     token: null | string
 }
 
-const initialState:TAuthState = {
+const initialState: TAuthState = {
     user: null,
     token: null
 }
@@ -20,6 +20,9 @@ const authSlice = createSlice({
     reducers: {
         login: (state, action) => {
             state = action.payload
+            // const { user, token } = action.payload
+            // state.user = user;
+            // state.token = token;
         },
         logout: (state) => {
             // state = initialState
