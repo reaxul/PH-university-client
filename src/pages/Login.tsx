@@ -1,28 +1,45 @@
 import { Button } from "antd";
 import { useForm } from "react-hook-form";
 import { useLoginMutation } from "../redux/features/auth/authApi";
+import { useAppDispatch } from "../redux/hooks";
+import { setUser } from "../redux/features/auth/authSlice";
+import { verifyToken } from "../utils/verifyToken";
 
 const Login = () => {
-   const { register, handleSubmit } = useForm();
-  const [Login, { data, error }] = useLoginMutation();
-  console.log({data, error});
+  const dispatch = useAppDispatch();
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      id: "A-0001",
+      password: "admin123",
+    },
+  });
+  const [login, { error }] = useLoginMutation();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data: { id: string; password: string }) => {
     const userInfo = {
       id: data.id,
       password: data.password,
-    }
-    Login(userInfo);
+    };
+    const res = await login(userInfo).unwrap();
+    const user = verifyToken(res.data.accessToken);
+
+    dispatch(setUser({ user, token: res.data.accessToken }));
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <label htmlFor="id">ID:</label>
-        <input {...register('id')} type="text" title="id" id="id" />
+        <input {...register("id")} type="text" title="id" id="id" />
       </div>
       <div>
         <label htmlFor="password">Password:</label>
-        <input {...register('password')} type="text" title="password" id="password" />
+        <input
+          {...register("password")}
+          type="text"
+          title="password"
+          id="password"
+        />
       </div>
       <Button htmlType="submit">Login</Button>
     </form>
