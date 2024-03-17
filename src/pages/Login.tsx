@@ -5,6 +5,7 @@ import { useAppDispatch } from "../redux/hooks";
 import { setUser } from "../redux/features/auth/authSlice";
 import { verifyToken } from "../utils/verifyToken";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,17 +19,23 @@ const Login = () => {
   const [login, { error }] = useLoginMutation();
 
   const onSubmit = async (data: { id: string; password: string }) => {
-    const userInfo = {
-      id: data.id,
-      password: data.password,
-    };
-    const res = await login(userInfo).unwrap();
-    const user = verifyToken(res.data.accessToken);
+    toast.loading("logging in...");
+    try {
+      const userInfo = {
+        id: data.id,
+        password: data.password,
+      };
+      const res = await login(userInfo).unwrap();
+      const user = verifyToken(res.data.accessToken);
 
-    dispatch(setUser({ user, token: res.data.accessToken }));
-    navigate(`/${user.role}/dashboard`);
+      dispatch(setUser({ user, token: res.data.accessToken }));
+      toast.success("Logged in successfully");
+      navigate(`/${user.role}/dashboard`);
+    } catch (error) {
+      toast.error("Something went wrong, please try again");
+    }
   };
-  
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
