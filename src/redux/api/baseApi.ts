@@ -10,14 +10,27 @@ const baseQuery = fetchBaseQuery({
         const token = (getState() as RootState).auth.token;
 
         if (token) {
-            headers.set('authorization', `Bearer ${token}`);
+            headers.set('authorization', `${token}`);
         }
         return headers;
     }
 });
 
+const baseQueryWithRefreshToken = async (args, api, extraOptions) => {
+    const result = await baseQuery(args, api, extraOptions);
+    console.log(result);
+    if (result.error?.status === 401) {
+        const refreshResult = await api.endpoints.refreshToken.initiate({});
+        if (refreshResult.error) {
+            return refreshResult;
+        }
+        return baseQuery(args, api, extraOptions);
+    }
+    return result;
+}
+
 export const baseApi = createApi({
     reducerPath: 'baseApi',
-    baseQuery,
+    baseQuery: baseQueryWithRefreshToken,
     endpoints: () => ({})
 })
