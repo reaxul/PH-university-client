@@ -27,9 +27,9 @@ const baseQueryWithRefreshToken = async (args, api, extraOptions) => {
             credentials: 'include',
         })
         const data = await res.json();
-        const user = api.getState().auth.user;
+        const user = (api.getState() as RootState).auth.user;
 
-        api.dispatch(setUser({ user, token: data.accessToken }));
+        api.dispatch(setUser({ user, token: data.data.accessToken }));
         result = await baseQuery(args, api, extraOptions);
     }
     return result;
