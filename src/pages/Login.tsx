@@ -1,4 +1,4 @@
-import { Button } from "antd";
+import { Button, Row } from "antd";
 import { FieldValues, useForm, useFormContext } from "react-hook-form";
 import { useLoginMutation } from "../redux/features/auth/authApi";
 import { useAppDispatch } from "../redux/hooks";
@@ -23,33 +23,31 @@ const Login = () => {
 
   const onSubmit = async (data: FieldValues) => {
     console.log(data);
-    // const toastId = toast.loading("logging in...");
-    // try {
-    //   const userInfo = {
-    //     id: data.id,
-    //     password: data.password,
-    //   };
-    //   const res = await login(userInfo).unwrap();
-    //   const user = verifyToken(res.data.accessToken) as TUser;
+    const toastId = toast.loading("logging in...");
+    try {
+      const userInfo = {
+        id: data.id,
+        password: data.password,
+      };
+      const res = await login(userInfo).unwrap();
+      const user = verifyToken(res.data.accessToken) as TUser;
 
-    //   dispatch(setUser({ user, token: res.data.accessToken }));
-    //   toast.success("Logged in successfully", { id: toastId, duration: 2500 });
-    //   navigate(`/${user.role}/dashboard`);
-    // } catch (error) {
-    //   toast.error("Something went wrong, please try again", { id: toastId,duration: 2500});
-    // }
+      dispatch(setUser({ user, token: res.data.accessToken }));
+      toast.success("Logged in successfully", { id: toastId, duration: 2500 });
+      navigate(`/${user.role}/dashboard`);
+    } catch (error) {
+      toast.error("Something went wrong, please try again", { id: toastId,duration: 2500});
+    }
   };
 
   return (
-    <PHForm onSubmit={onSubmit}>
-      <div>
+    <Row justify="center" align="middle" style={{ height: "100vh" }}>
+      <PHForm onSubmit={onSubmit}>
         <PHInput type="text" name="id" label={"Id:"} />
-      </div>
-      <div>
         <PHInput type="text" name="password" label={"Password:"} />
-      </div>
-      <Button htmlType="submit">Login</Button>
-    </PHForm>
+        <Button htmlType="submit">Login</Button>
+      </PHForm>
+    </Row>
   );
 };
 
